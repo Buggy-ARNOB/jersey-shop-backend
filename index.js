@@ -72,8 +72,6 @@ async function run() {
 
         const bookingCollection = client.db('jersey-shop').collection('booking');
 
-        const paymentCollection = client.db('jersey-shop').collection('payment');
-
 
 
         //middleWare for verifying admin
@@ -108,46 +106,6 @@ async function run() {
         });
 
 
-        /*
-Stripe API
-*/
-        app.post('/create-payment-intents', async (req, res) => {
-            const booking = req.body;
-            const price = booking.price;
-            const amount = price * 100;
-
-            const paymentIntent = await stripe.paymentIntents.create({
-                currency: 'usd',
-                amount: amount,
-                "payment_method_types": [
-                    "card"
-                ]
-            })
-
-
-            res.send({
-                clientSecret: paymentIntent.client_secret
-            })
-        })
-
-
-        //storing transation details to database
-
-        app.post('/payments', async (req, res) => {
-            const payment = req.body
-            const result = await paymentCollection.insertOne(payment)
-
-            const id = payment.bookingId
-            const filter = { _id: new ObjectId(id) }
-            const updatedDoc = {
-                $set: {
-                    paid: "true",
-                    transactionId: payment.transactionId
-                }
-            }
-            const updateResult = await bookingCollection.updateOne(filter, updatedDoc)
-            res.send(result)
-        })
 
 
         //user to database
@@ -173,21 +131,6 @@ Stripe API
             const result = await usersCollection.deleteOne(filter);
             res.send(result)
         })
-        //add new admin by other admin
-        // app.put('/users/admin/:id', async (req, res) => {
-        //     const id = req.query.id;
-        //     const filter = { _id: ObjectId(id) }
-
-        //     const options = { upsert: true };
-
-        //     const updatedDoc = {
-        //         $set: {
-        //             role: 'admin'
-        //         }
-        //     }
-        //     const result = await usersCollection.updateOne(filter, updatedDoc, options);
-        //     res.send(result);
-        // })
 
         app.get('/users/verification/:email', async (req, res) => {
             const email = req.params.email
@@ -358,12 +301,11 @@ Stripe API
             res.send(booking)
         })
 
-        //syncing product information to database
-        app.put('/payment/success/:bookingId', verifyJWT, async (req, res) => {
-            const bookingId = req.params.bookingId;
+        app.put('/payment/:id', verifyJWT, async (req, res) => {
+            const id = req.params.id;
 
-            const filter = { productId: bookingId }
-            const idFIltering = { _id: new ObjectId(bookingId) }
+            const filter = { _id: new ObjectId(id) }
+
             const options = { upsert: true };
 
             const updatedDoc = {
@@ -371,21 +313,9 @@ Stripe API
                     payment: 'true'
                 }
             }
-
-            const updatedProduct = {
-                $set: {
-                    status: 'sold'
-                }
-            }
-
-
             const result = await bookingCollection.updateOne(filter, updatedDoc, options);
-
-            const productStatus = await productsCollection.updateOne(idFIltering, updatedProduct, options,)
-
             res.send(result);
         })
-
 
     }
 
