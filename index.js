@@ -64,15 +64,15 @@ async function run() {
 
     try {
 
-        const usersCollection = client.db('zooom-vrooom-iGarage').collection('users');
+        const usersCollection = client.db('jersey-shop').collection('users');
 
-        const categoryCollection = client.db('zooom-vrooom-iGarage').collection('category');
+        const categoryCollection = client.db('jersey-shop').collection('category');
 
-        const productsCollection = client.db('zooom-vrooom-iGarage').collection('products');
+        const productsCollection = client.db('jersey-shop').collection('products');
 
-        const bookingCollection = client.db('zooom-vrooom-iGarage').collection('booking');
+        const bookingCollection = client.db('jersey-shop').collection('booking');
 
-        const paymentCollection = client.db('zooom-vrooom-iGarage').collection('payment');
+        const paymentCollection = client.db('jersey-shop').collection('payment');
 
 
 
@@ -399,9 +399,9 @@ run().catch(err => console.log(err))
 
 
 app.get('/', (req, res) => {
-    res.send("Zooom Vroom iGarage running successfully")
+    res.send("Jersey Mania running successfully")
 })
 
 app.listen(port, () => {
-    console.log(`Zooom Vroom iGarage server running on port ${port} `)
+    console.log(`Jersey Mania is running on ${port} `)
 })
