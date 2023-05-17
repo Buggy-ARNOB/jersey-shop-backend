@@ -4,8 +4,6 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 
-
-
 //requiring jsonWebToken
 const jwt = require("jsonwebtoken")
 
@@ -19,8 +17,6 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 
 //note: you must use require('dotenv').config() before use any environment variables
-//requiring stripe key
-const stripe = require('stripe')(process.env.STRIPE_SECRETS)
 
 //2 middleware
 app.use(cors());
